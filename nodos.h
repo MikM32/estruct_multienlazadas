@@ -1,13 +1,7 @@
 #ifndef NODOS_H_INCLUDED
 #define NODOS_H_INCLUDED
 
-#include<list>
-#include<stack>
-#include<queue>
-#include<algorithm>
-#include<string>
-
-using namespace std;
+#include "utils.h"
 
 //Declaracion de prototipos
 
