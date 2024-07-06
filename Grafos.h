@@ -217,14 +217,63 @@ public:
 
     }
 
-    void modificarPesoArco(elem v, elem w)
+    void destruir()
     {
 
     }
 
-    list<elem> getVecinos()
+    void modificarPesoArco(elem v, elem w, float peso)
     {
+        NodoArco<elem>* arco = getNodoArco(v, w);
 
+        if(arco)
+        {
+            arco->setPeso(peso);
+        }
+    }
+
+    list<elem> getVecinos(elem v) // Necesario para grafos dirigidos (para no dirigidos con un getSucesores o getPredecesores basta).
+    {
+        list<elem> res;
+        vector<bool> visitados(this->nVertices, false);
+        NodoVertice<elem>* vActual = this->raiz;
+        NodoArco<elem>* arcoActual =NULL;
+        bool encontrado=false;
+
+        while(vActual != NULL)
+        {
+            arcoActual = vActual->getArco();
+
+            if(!encontrado)
+            {
+                if(vActual->getInfo() == v)
+                {
+                    while(arcoActual != NULL)
+                    {
+                        res.push_back(arcoActual->getVertice()->getInfo());
+
+                        arcoActual = arcoActual->getProx();
+                    }
+                    encontrado=true;
+                }
+            }
+
+
+            while(arcoActual != NULL)
+            {
+                if(arcoActual->getVertice()->getInfo() == v)
+                {
+                    res.push_back(vActual->getInfo());
+                }
+
+                arcoActual = arcoActual->getProx();
+            }
+
+
+            vActual = vActual->getProx();
+        }
+
+        return res;
     }
 
     list<elem> getSucesores(elem v)
@@ -312,6 +361,21 @@ public:
 
     }
 
+    bool esConexo()
+    {
+
+    }
+
+    bool esPuente(elem v)
+    {
+
+    }
+
+    list<elem> getPuentes()
+    {
+
+    }
+
     list<elem> dfs(elem v)
     {
         vector<bool> visitados(this->nVertices, false);
@@ -325,12 +389,40 @@ public:
 
     list<elem> bfs(elem v)
     {
+        list<elem> res, sucesores;
+        vector<bool> visitados(this->nVertices, false);
+        queue<elem> colaAux;
+        elem actual, w;
 
-    }
+        colaAux.push(v);
+        visitados[v] = true;
 
-    list<elem> niveles(elem)
-    {
+        while(!colaAux.empty())
+        {
+            actual = colaAux.front();
 
+            res.push_back(actual);
+
+            sucesores = getSucesores(actual);
+
+            while(!sucesores.empty())
+            {
+                w = sucesores.front();
+
+                if(!visitados[w])
+                {
+                    visitados[w] = true;
+                    colaAux.push(w);
+                }
+
+                sucesores.pop_front();
+            }
+
+            colaAux.pop();
+
+        }
+
+        return res;
     }
 
     list<elem> ordenamientoTopologico(list<elem> lista)
