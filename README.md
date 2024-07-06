@@ -1,2 +1,2 @@
 # estruct_multienlazadas
-estructuras multienlazadas: Grafos
+Estructuras multienlazadas: Grafos dirigidos, no dirigidos, etc
