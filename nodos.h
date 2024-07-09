@@ -3,22 +3,27 @@
 
 #include "utils.h"
 
+//==========================
 //Declaracion de prototipos
-
+//==========================
 template< typename elem>
 class NodoVertice;
 
 template< typename elem>
 class NodoArco;
+//==========================
 
+
+
+//==========================
 // Definicion de clases
-
+//==========================
 template< typename elem>
 class NodoArco
 {
 private:
 
-    float costo;
+    float peso;
 
     NodoVertice<elem>* vertice;
     NodoArco<elem>* prox;
@@ -26,15 +31,15 @@ private:
 public:
 
     //Constructores
-    NodoArco():costo(-1.0), vertice(NULL), prox(NULL){};
-    NodoArco(float costop):costo(costop), vertice(NULL), prox(NULL){};
-    NodoArco(float costop, NodoVertice<elem>* vert):costo(costop), vertice(vert), prox(NULL){};
-    NodoArco(float costop, NodoVertice<elem>* vert, NodoArco<elem>* proximo):costo(costop), vertice(vert), prox(proximo){};
+    NodoArco():peso(-1.0), vertice(NULL), prox(NULL){};
+    NodoArco(float peso):peso(peso), vertice(NULL), prox(NULL){};
+    NodoArco(float peso, NodoVertice<elem>* vert):peso(peso), vertice(vert), prox(NULL){};
+    NodoArco(float peso, NodoVertice<elem>* vert, NodoArco<elem>* proximo):peso(peso), vertice(vert), prox(proximo){};
 
     //Setters
-    void setCosto(float costo)
+    void setPeso(float peso)
     {
-        this->costo = costo;
+        this->peso = peso;
     }
 
     void setVertice(NodoVertice<elem>* vert)
@@ -48,9 +53,9 @@ public:
     }
 
     //Getters
-    float getCosto()
+    float getPeso()
     {
-        return this->costo;
+        return this->peso;
     }
 
     NodoVertice<elem>* getVertice()

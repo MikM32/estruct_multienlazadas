@@ -24,7 +24,8 @@ int main()
     //test.convertirNoDirigido();
     Grafo<int> testMapeado = test.mapear(&elemMapeados);
 
-    printListaMapeada(testMapeado.caminoMasCorto(0, 3), elemMapeados);
+    //testMapeado.caminoMasCorto(0, 3);
+    //printListaMapeada(testMapeado.caminoMasCorto(0, 4), elemMapeados);
 
 
 

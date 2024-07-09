@@ -302,6 +302,70 @@ public:
 
     void eliminarVertice(elem v)
     {
+        NodoVertice<elem>* nodoEliminar = NULL, *antEliminar=NULL, *nodoAct=this->primero, *vanterior=NULL;
+        NodoArco<elem>* arcAct=NULL, *anterior=NULL;
+
+        while(nodoAct != NULL)
+        {
+            arcAct = nodoAct->getArco();
+
+            if(nodoAct->getInfo() == v)
+            {
+                antEliminar = vanterior;
+                nodoEliminar = nodoAct;
+            }
+
+            while(arcAct != NULL)
+            {
+
+                if(arcAct->getVertice()->getInfo() == v)
+                {
+                    if(anterior)
+                    {
+                        anterior->setProx(arcAct->getProx());
+                        delete arcAct;
+                    }
+                    else
+                    {
+                        nodoAct->setArco(arcAct->getProx());
+                        delete arcAct;
+                    }
+                    break;
+                }
+
+                anterior = arcAct;
+                arcAct = arcAct->getProx();
+            }
+
+            vanterior = nodoAct;
+            nodoAct = nodoAct->getProx();
+        }
+
+        arcAct = nodoEliminar->getArco();
+        list<NodoArco<elem>*> arcos;
+        while(arcAct != NULL)
+        {
+            arcos.push_front(arcAct);
+            arcAct = arcAct->getProx();
+        }
+
+        while(!arcos.empty())
+        {
+            delete arcos.front();
+            arcos.pop_front();
+        }
+
+        if(antEliminar)
+        {
+            antEliminar->setProx(nodoEliminar->getProx());
+            delete nodoEliminar;
+        }
+        else
+        {
+            this->primero = nodoEliminar->getProx();
+            delete nodoEliminar;
+        }
+
 
     }
 
@@ -624,6 +688,10 @@ public:
         visitados[v] = true;
         float costoActual;
 
+        if(v >= this->nVertices || w >= this->nVertices)
+        {
+            return camino;
+        }
 
         colaAux.push(v);
         elem act, act2;
@@ -658,10 +726,16 @@ public:
         act = w;
         camino.push_front(act);
 
-        while(act != v)
+
+        while(act != v )
         {
             act = predecesores[act];
             camino.push_front(act);
+        }
+
+        if(camino.back()!=w || camino.front() != v)
+        {
+            return list<elem>();
         }
 
         return camino;
