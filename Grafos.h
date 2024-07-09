@@ -11,13 +11,13 @@ class Grafo
 //      ATRIBUTOS Y METODOS PRIVADOS
 //========================================
 private:
-    NodoVertice<elem>* raiz;
+    NodoVertice<elem>* primero;
     int nVertices;
 
 
     NodoVertice<elem>* getNodoVertice(elem v)
     {
-        NodoVertice<elem>* act=this->raiz;
+        NodoVertice<elem>* act=this->primero;
 
         while(act != NULL)
         {
@@ -36,9 +36,9 @@ private:
 
         NodoArco<elem>* res=NULL;
 
-        if(this->raiz != NULL && this->raiz->getProx() != NULL) // Si el grafo no es vacio y tiene mas de 1 vertice
+        if(this->primero != NULL && this->primero->getProx() != NULL) // Si el grafo no es vacio y tiene mas de 1 vertice
         {
-            NodoVertice<elem>* vertAct = this->raiz;
+            NodoVertice<elem>* vertAct = this->primero;
             NodoVertice<elem>* vertV = NULL;
             //NodoVertice<elem>* vertW = NULL;
             bool encontrados = false;
@@ -116,10 +116,23 @@ private:
 //      ATRIBUTOS Y METODOS PUBLICOS
 //========================================
 public:
+
+    //============================
+    //=======Constructores
+    //============================
     Grafo()
     {
-        this->raiz = NULL;
+        this->primero = NULL;
         this->nVertices = 0;
+    }
+
+    //============================
+
+
+
+    int getNVertices()
+    {
+        return this->nVertices;
     }
 
     void copiar(Grafo<elem>& g2)
@@ -129,14 +142,14 @@ public:
 
     void agregarVertice(elem v)
     {
-        if(this->raiz == NULL)
+        if(this->primero == NULL)
         {
-            this->raiz = new NodoVertice<elem>(v);
+            this->primero = new NodoVertice<elem>(v);
             this->nVertices++;
         }
         else
         {
-            NodoVertice<elem>* act = this->raiz;
+            NodoVertice<elem>* act = this->primero;
 
             bool repetido= (act->getInfo() == v) ? true: false;
 
@@ -160,9 +173,9 @@ public:
 
     void agregarArco(elem v, elem w, float costo=-1.0) //O(N)
     {
-        if(this->raiz != NULL && this->raiz->getProx() != NULL) // Si el grafo no es vacio y tiene mas de 1 vertice
+        if(this->primero != NULL && this->primero->getProx() != NULL) // Si el grafo no es vacio y tiene mas de 1 vertice
         {
-            NodoVertice<elem>* vertAct = this->raiz;
+            NodoVertice<elem>* vertAct = this->primero;
             NodoVertice<elem>* vertV = NULL;
             NodoVertice<elem>* vertW = NULL;
             bool encontrados = false;
@@ -207,9 +220,84 @@ public:
         }
     }
 
+    void agregarArcoNoDirigido(elem v, elem w, float peso=-1.0)
+    {
+        if(this->primero != NULL && this->primero->getProx() != NULL) // Si el grafo no es vacio y tiene mas de 1 vertice
+        {
+            NodoVertice<elem>* vertAct = this->primero;
+            NodoVertice<elem>* vertV = NULL;
+            NodoVertice<elem>* vertW = NULL;
+            bool encontrados = false;
+
+            while(vertAct != NULL)
+            {
+                if(vertAct->getInfo() == v) // Como se entiende que no hay elementos repetidos entonces la verificacion es asi
+                {
+                    vertV = vertAct;
+                }
+
+                if(vertAct->getInfo() == w)
+                {
+                    vertW = vertAct;
+                }
+
+                if(vertV && vertW) // Si se encontraron ambos vertices se termina el ciclo
+                {
+                    encontrados = true;
+                    break;
+                }
+
+                vertAct = vertAct->getProx();
+
+            }
+
+            if(encontrados)
+            {
+                NodoArco<elem>* arcoAct = vertV->getArco(), *aux=NULL;
+
+                if(arcoAct == NULL)
+                {
+                    vertV->setArco(new NodoArco<elem>(peso, vertW));
+                }
+                else
+                {
+                    aux = vertV->getArco();
+                    vertV->setArco(new NodoArco<elem>(peso, vertW, aux));
+
+                }
+
+                arcoAct = vertW->getArco();
+                if(arcoAct == NULL)
+                {
+                    vertW->setArco(new NodoArco<elem>(peso, vertV));
+                }
+                else
+                {
+                    aux = vertW->getArco();
+                    vertW->setArco(new NodoArco<elem>(peso, vertV, aux));
+
+                }
+
+            }
+        }
+    }
+
     void eliminarArco(elem v, elem w)
     {
+        NodoVertice<elem>* vert = getNodoVertice(v);
+        NodoArco<elem>* arcoAct = vert->getArco(), *anterior = vert->getArco();
 
+        while(arcoAct!=NULL)
+        {
+            if(arcoAct->getVertice()->getInfo() == w)
+            {
+                anterior->setProx(arcoAct->getProx());
+                delete arcoAct;
+                break;
+            }
+
+            arcoAct = arcoAct->getProx();
+        }
     }
 
     void eliminarVertice(elem v)
@@ -236,7 +324,7 @@ public:
     {
         list<elem> res;
         vector<bool> visitados(this->nVertices, false);
-        NodoVertice<elem>* vActual = this->raiz;
+        NodoVertice<elem>* vActual = this->primero;
         NodoArco<elem>* arcoActual =NULL;
         bool encontrado=false;
 
@@ -299,7 +387,7 @@ public:
 
     list<elem> getPredecesores(elem v)
     {
-        NodoVertice<elem>* act=this->raiz;
+        NodoVertice<elem>* act=this->primero;
         list<elem> pred;
 
         while(act != NULL)
@@ -316,7 +404,7 @@ public:
 
     void convertirNoDirigido()
     {
-        NodoVertice<elem>* vActual=NULL, *vNoDirigido = this->raiz;
+        NodoVertice<elem>* vActual=NULL, *vNoDirigido = this->primero;
         NodoArco<elem>* arcoAct, *nuevoArc, *arcoAct2, *penult;
 
 
@@ -344,9 +432,19 @@ public:
 
                 if(!repetido) // Si el arco no esta agregado entonces lo crea e inserta al final
                 {
-                    nuevoArc = new NodoArco<elem>();
-                    nuevoArc->setVertice(vNoDirigido);
-                    penult->setProx(nuevoArc);
+                    if(penult)
+                    {
+                        nuevoArc = new NodoArco<elem>();
+                        nuevoArc->setVertice(vNoDirigido);
+                        penult->setProx(nuevoArc);
+                    }
+                    else
+                    {
+                        nuevoArc = new NodoArco<elem>();
+                        nuevoArc->setVertice(vNoDirigido);
+                        arcoAct->getVertice()->setArco(nuevoArc);
+                    }
+
                 }
                 arcoAct = arcoAct->getProx();
             }
@@ -356,14 +454,90 @@ public:
 
     }
 
-    void mapear()
+    int getMapIndice(vector<elem> elemMap, elem valor)
+    {
+        for(int i=0; i<elemMap.size(); i++)
+        {
+            if(elemMap[i] == valor)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    Grafo<int> mapear(vector<elem>* elemMap)
+    {
+        Grafo<int> grafoMapeado;
+        NodoVertice<elem>* act=NULL;
+        NodoArco<elem>* arcAct=NULL;
+
+        act = this->primero;
+
+        int cont =0;
+        while(act != NULL)
+        {
+            elemMap->emplace(elemMap->end(), act->getInfo());
+            grafoMapeado.agregarVertice(cont);
+            act = act->getProx();
+
+            cont++;
+
+        }
+
+        cont =0;
+        act = this->primero;
+        while(act != NULL)
+        {
+            arcAct = act->getArco();
+            while(arcAct != NULL)
+            {
+                int indice = getMapIndice(*elemMap, arcAct->getVertice()->getInfo());
+                if(indice >= 0)
+                {
+                    grafoMapeado.agregarArco(cont, indice, arcAct->getPeso());
+                }
+
+                arcAct = arcAct->getProx();
+            }
+
+            cont++;
+            act = act->getProx();
+        }
+
+        return grafoMapeado;
+    }
+
+    list<elem> getVertices()
+    {
+        list<elem> res;
+
+        NodoVertice<elem>* act = this->primero;
+
+        while(act != NULL)
+        {
+            res.push_back(act->getInfo());
+
+            act = act->getProx();
+        }
+
+        return res;
+    }
+
+    Grafo<elem> desmapear(vector<elem>& elemMap)
     {
 
     }
 
     bool esConexo()
     {
+        return componentesConexas() == 1;
+    }
 
+    int componentesConexas()
+    {
+        return 0;
     }
 
     bool esPuente(elem v)
@@ -430,14 +604,67 @@ public:
 
     }
 
-    Grafo<elem> arbolExpandidoMin(Grafo<elem> g)
+    Grafo<elem> arbolExpandidoMin()
     {
-
+        Grafo<elem> res;
+        list<elem> partida, llegada;
+        list<float> pesos;
     }
 
     list<elem> caminoMasCorto(elem v, elem w)
     {
+        vector<bool> visitados(this->nVertices, false);
+        vector<float> costos(this->nVertices, -1.0);
+        vector<elem> predecesores(this->nVertices);
 
+        queue<elem> colaAux;
+        list<elem> sucesores, camino;
+
+        costos[v] = 0.0;
+        visitados[v] = true;
+        float costoActual;
+
+
+        colaAux.push(v);
+        elem act, act2;
+        while(!colaAux.empty())
+        {
+            act = colaAux.front();
+            colaAux.pop();
+
+            sucesores = this->getSucesores(act);
+
+            while(!sucesores.empty())
+            {
+                act2 = sucesores.front();
+
+                costoActual = costos[act] + this->getPesoArco(act, act2);
+
+                if(costoActual < costos[act2] || costos[act2] == -1)
+                {
+                    if(!visitados[act2])
+                    {
+                        //visitados[act2] = true;
+                        costos[act2] = costoActual;
+                        predecesores[act2] = act;
+                        colaAux.push(act2);
+                    }
+                }
+                sucesores.pop_front();
+
+            }
+        }
+
+        act = w;
+        camino.push_front(act);
+
+        while(act != v)
+        {
+            act = predecesores[act];
+            camino.push_front(act);
+        }
+
+        return camino;
     }
 
     list<elem> caminoMasCorto(elem v, elem h, elem w)
@@ -445,9 +672,67 @@ public:
 
     }
 
-    void construirHipercubo(int dimension)
+    list<elem> caminoMasCortoSin(elem v, list<elem> h, elem w)
     {
+        vector<bool> visitados(this->nVertices, false);
+        vector<float> costos(this->nVertices, -1.0);
+        vector<elem> predecesores;
 
+        queue<elem> colaAux;
+        list<elem> sucesores, camino;
+
+        while(!h.empty())
+        {
+            visitados[h.front()] = true;
+
+            h.pop_front();
+        }
+
+        costos[v] = 0.0;
+        visitados[v] = true;
+        float costoActual;
+
+
+        colaAux.push(v);
+        elem act, act2;
+        while(!colaAux.empty())
+        {
+            act = colaAux.front();
+            colaAux.pop();
+
+            sucesores = this->getSucesores(act);
+
+            while(!sucesores.empty())
+            {
+                act2 = sucesores.front();
+
+                costoActual = costos[act] + this->getPesoArco(act, act2);
+
+                if(costoActual < costos[act2] || costos[act2] == -1)
+                {
+                    if(!visitados[act2])
+                    {
+                        visitados[act2] = true;
+                        costos[act2] = costoActual;
+                        predecesores[act2] = act;
+                        colaAux.push(act2);
+                    }
+                }
+                sucesores.pop_front();
+
+            }
+        }
+
+        act = w;
+        camino.push_front(act);
+
+        while(act != v )
+        {
+            act = predecesores[act];
+            camino.push_front(act);
+        }
+
+        return camino;
     }
 
     bool esIsomorfo(Grafo<elem> g2)
@@ -490,14 +775,14 @@ public:
         float res = -1.0;
         if(arco)
         {
-            res = arco->getCosto();
+            res = arco->getPeso();
         }
         return res;
     }
 
     bool esVacio()
     {
-        return this->nodoRaiz == NULL;
+        return this->primero == NULL;
     }
 
 

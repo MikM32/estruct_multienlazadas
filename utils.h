@@ -7,6 +7,7 @@
 #include<queue>
 #include<algorithm>
 #include<string>
+#include <sstream>
 
 
 using namespace std;
@@ -26,6 +27,7 @@ template< typename elem>
 void printFormatedList(list<elem> lista)
 {
     cout << "[";
+
     for(auto a: lista)
     {
         cout << a;
@@ -38,11 +40,21 @@ void printFormatedList(list<elem> lista)
     cout << "]" << endl;
 }
 
-template< typename elem>
-void leerLista(list<elem>& lista)
+template<typename elem>
+void printListaMapeada(list<int> lista, vector<elem>mapa)
 {
-    elem acum;
+    cout << "[";
 
+    for(auto a: lista)
+    {
+        cout << mapa[a];
+        if(a != lista.back())
+        {
+            cout << ", ";
+        }
+    }
+
+    cout << "]" << endl;
 }
 
 

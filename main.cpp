@@ -5,25 +5,28 @@ using namespace std;
 
 int main()
 {
-    Grafo<int> test;
+    Grafo<string> test;
 
-    test.agregarVertice(1);
-    test.agregarVertice(2);
-    test.agregarVertice(3);
-    test.agregarVertice(4);
-    test.agregarVertice(5);
+    test.agregarVertice("hola");
+    test.agregarVertice("adios");
+    test.agregarVertice("waza");
+    test.agregarVertice("pedro");
 
-    test.agregarArco(1, 2);
-    test.agregarArco(1, 3);
-    test.agregarArco(2, 5);
-    test.agregarArco(5, 1);
-    test.agregarArco(3, 4);
-    test.agregarArco(4, 2);
+    test.agregarArco("hola", "adios", 10);
+    test.agregarArco("hola", "waza", 2);
+    test.agregarArco("waza", "adios", 1);
+    test.agregarArco("adios", "pedro", 1);
+    test.agregarArco("waza", "pedro", 18);
 
 
-    test.convertirNoDirigido();
-    printFormatedList(test.getPredecesores(4));
-    printFormatedList(test.getSucesores(4));
+
+    vector<string> elemMapeados;
+    //test.convertirNoDirigido();
+    Grafo<int> testMapeado = test.mapear(&elemMapeados);
+
+    printListaMapeada(testMapeado.caminoMasCorto(0, 3), elemMapeados);
+
+
 
 
     return 0;
