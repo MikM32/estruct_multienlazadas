@@ -5,27 +5,29 @@ using namespace std;
 
 int main()
 {
-    Grafo<string> test;
 
-    test.agregarVertice("hola");
-    test.agregarVertice("adios");
-    test.agregarVertice("waza");
-    test.agregarVertice("pedro");
+    Grafo<int> test;
+    test.agregarVertice(0);
+    test.agregarVertice(1);
+    test.agregarVertice(2);
+    test.agregarVertice(3);
+    test.agregarVertice(4);
 
-    test.agregarArco("hola", "adios", 10);
-    test.agregarArco("hola", "waza", 2);
-    test.agregarArco("waza", "adios", 1);
-    test.agregarArco("adios", "pedro", 1);
-    test.agregarArco("waza", "pedro", 18);
+    test.agregarArcoNoDirigido(0, 1, 1);
+    test.agregarArcoNoDirigido(0, 3, 6);
+    test.agregarArcoNoDirigido(0, 4, 2);
+    test.agregarArcoNoDirigido(0, 2, 4);
+    test.agregarArcoNoDirigido(1, 4, 2);
+    test.agregarArcoNoDirigido(1, 2, 3);
+    test.agregarArcoNoDirigido(4, 2, 2);
+    test.agregarArcoNoDirigido(4, 3, 4);
+    test.agregarArcoNoDirigido(1, 2, 1);
+    test.agregarArcoNoDirigido(3, 2, 5);
 
 
 
-    vector<string> elemMapeados;
-    //test.convertirNoDirigido();
-    Grafo<int> testMapeado = test.mapear(&elemMapeados);
-
-    //testMapeado.caminoMasCorto(0, 3);
-    //printListaMapeada(testMapeado.caminoMasCorto(0, 4), elemMapeados);
+    Grafo<int> arbol = test.arbolExpandidoMin(0);
+    printFormatedList(arbol.dfs(0));
 
 
 

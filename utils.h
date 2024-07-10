@@ -8,6 +8,7 @@
 #include<algorithm>
 #include<string>
 #include <sstream>
+#include <float.h>
 
 
 using namespace std;

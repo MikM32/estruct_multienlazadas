@@ -667,16 +667,30 @@ public:
         return res;
     }
 
-    int pesoMinIndice(list<float> pesos)
+    int pesoMinIndice(vector<float> pesos)
     {
+        int minInd=0;
+        float minimo = FLT_MAX;
 
+        for(int i=0; i<pesos.size(); i++)
+        {
+            if(pesos[i]< minimo)
+            {
+                minInd = i;
+                minimo = pesos[i];
+            }
+        }
+
+        return minInd;
     }
 
     Grafo<elem> arbolExpandidoMin(elem inicio)
     {
         Grafo<elem> res;
         list<elem> partida, llegada, sucesores;
+
         list<float> pesos;
+        vector<float> vpesos;
         vector<bool> visitados(this->nVertices, false);
 
         sucesores = this->getSucesores(inicio);
@@ -690,31 +704,50 @@ public:
             sucesores.pop_front();
         }
 
-        visitado[inicio] = true;
+        visitados[inicio] = true;
 
         res.agregarVertice(inicio);
 
-        while(!pesos.empty())
-        {
-            int minIndice = pesoMinIndice(pesos);
-            elem vLlegada = llegada[minIndice];
+        elem vLlegada, vPartida, vPeso;
+        vector<elem> vecpartida(partida.begin(), partida.end()), vecllegada(llegada.begin(), llegada.end());
+        vector<float> vecpesos(pesos.begin(), pesos.end());
 
-            if(visitados[llegada[minIndice]])
+        while(!vecpesos.empty())
+        {
+            int minIndice = pesoMinIndice(vecpesos);
+
+            vLlegada = vecllegada[minIndice];
+
+            if(!visitados[vecllegada[minIndice]])
             {
 
                 res.agregarVertice(vLlegada);
 
-                res.agregarArco(partida[minIndice], vLlegada, pesos[minIndice]);
+                res.agregarArco(vecpartida[minIndice], vLlegada, vecpesos[minIndice]);
 
-                sucesores = this->getSucesores();
+                sucesores = this->getSucesores(vLlegada);
 
                 while(!sucesores.empty())
                 {
-                    if(!visitados)
+                    if(!visitados[sucesores.front()])
+                    {
+                        vecpartida.emplace_back(vLlegada);
+                        vecpesos.emplace_back(this->getPesoArco(vLlegada, sucesores.front()));
+                        vecllegada.emplace_back(sucesores.front());
+                    }
+
+                    sucesores.pop_front();
                 }
             }
+
+            vecpartida.erase(vecpartida.begin()+minIndice);
+            vecllegada.erase(vecllegada.begin()+minIndice);
+            vecpesos.erase(vecpesos.begin()+minIndice);
+
+            visitados[vecllegada[minIndice]] = true;
         }
 
+        return res;
     }
 
     bool esSumidero(elem v)
