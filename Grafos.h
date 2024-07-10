@@ -12,7 +12,7 @@ class Grafo
 //========================================
 private:
     NodoVertice<elem>* primero;
-    int nVertices;
+    int nVertices, nArcos;
 
 
     NodoVertice<elem>* getNodoVertice(elem v)
@@ -216,6 +216,8 @@ public:
                     vertV->setArco(new NodoArco<elem>(costo, vertW, aux));
 
                 }
+
+                this->nArcos++;
             }
         }
     }
@@ -277,6 +279,8 @@ public:
                     vertW->setArco(new NodoArco<elem>(peso, vertV, aux));
 
                 }
+
+                this->nArcos++;
 
             }
         }
@@ -663,16 +667,66 @@ public:
         return res;
     }
 
-    list<elem> ordenamientoTopologico(list<elem> lista)
+    int pesoMinIndice(list<float> pesos)
     {
 
     }
 
-    Grafo<elem> arbolExpandidoMin()
+    Grafo<elem> arbolExpandidoMin(elem inicio)
     {
         Grafo<elem> res;
-        list<elem> partida, llegada;
+        list<elem> partida, llegada, sucesores;
         list<float> pesos;
+        vector<bool> visitados(this->nVertices, false);
+
+        sucesores = this->getSucesores(inicio);
+        llegada = sucesores;
+
+        int cont=0;
+        while(!sucesores.empty())
+        {
+            partida.push_back(inicio);
+            pesos.push_back(this->getPesoArco(inicio, sucesores.front()));
+            sucesores.pop_front();
+        }
+
+        visitado[inicio] = true;
+
+        res.agregarVertice(inicio);
+
+        while(!pesos.empty())
+        {
+            int minIndice = pesoMinIndice(pesos);
+            elem vLlegada = llegada[minIndice];
+
+            if(visitados[llegada[minIndice]])
+            {
+
+                res.agregarVertice(vLlegada);
+
+                res.agregarArco(partida[minIndice], vLlegada, pesos[minIndice]);
+
+                sucesores = this->getSucesores();
+
+                while(!sucesores.empty())
+                {
+                    if(!visitados)
+                }
+            }
+        }
+
+    }
+
+    bool esSumidero(elem v)
+    {
+        list<elem> sucesores = this->getSucesores(v);
+        return sucesores.empty();
+    }
+
+    bool esFuente(elem v)
+    {
+        list<elem> pred = this->getPredecesores(v);
+        return pred.empty();
     }
 
     list<elem> caminoMasCorto(elem v, elem w)
@@ -694,25 +748,28 @@ public:
         }
 
         colaAux.push(v);
-        elem act, act2;
+        elem act, act2=v;
         while(!colaAux.empty())
         {
             act = colaAux.front();
             colaAux.pop();
 
+
             sucesores = this->getSucesores(act);
+            visitados[act2] = true;
 
             while(!sucesores.empty())
             {
                 act2 = sucesores.front();
 
+
                 costoActual = costos[act] + this->getPesoArco(act, act2);
 
                 if(costoActual < costos[act2] || costos[act2] == -1)
                 {
+
                     if(!visitados[act2])
                     {
-                        //visitados[act2] = true;
                         costos[act2] = costoActual;
                         predecesores[act2] = act;
                         colaAux.push(act2);
@@ -721,6 +778,7 @@ public:
                 sucesores.pop_front();
 
             }
+
         }
 
         act = w;
@@ -755,8 +813,19 @@ public:
         queue<elem> colaAux;
         list<elem> sucesores, camino;
 
+
+        if(v >= this->nVertices || w >= this->nVertices)
+        {
+            return camino;
+        }
+
         while(!h.empty())
         {
+            if(h.front() >= this->nVertices)
+            {
+                return camino;
+            }
+
             visitados[h.front()] = true;
 
             h.pop_front();
@@ -768,13 +837,14 @@ public:
 
 
         colaAux.push(v);
-        elem act, act2;
+        elem act, act2=v;
         while(!colaAux.empty())
         {
             act = colaAux.front();
             colaAux.pop();
 
             sucesores = this->getSucesores(act);
+            visitados[act2] = true;
 
             while(!sucesores.empty())
             {
@@ -786,7 +856,7 @@ public:
                 {
                     if(!visitados[act2])
                     {
-                        visitados[act2] = true;
+
                         costos[act2] = costoActual;
                         predecesores[act2] = act;
                         colaAux.push(act2);
@@ -805,6 +875,12 @@ public:
             act = predecesores[act];
             camino.push_front(act);
         }
+
+        if(camino.back()!=w || camino.front() != v)
+        {
+            return list<elem>();
+        }
+
 
         return camino;
     }
